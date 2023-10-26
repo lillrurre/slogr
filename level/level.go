@@ -8,11 +8,11 @@ import (
 type Level int
 
 const (
-	DebugLevel = Level(slog.LevelDebug)
-	InfoLevel  = Level(slog.LevelInfo)
-	WarnLevel  = Level(slog.LevelWarn)
-	ErrorLevel = Level(slog.LevelError)
-	FatalLevel = Level(slog.LevelError + 4)
+	Debug = Level(slog.LevelDebug)
+	Info  = Level(slog.LevelInfo)
+	Warn  = Level(slog.LevelWarn)
+	Error = Level(slog.LevelError)
+	Fatal = Level(slog.LevelError + 4)
 )
 
 func (l Level) Level() slog.Level {
@@ -21,15 +21,15 @@ func (l Level) Level() slog.Level {
 
 func String(level slog.Level) string {
 	switch Level(level) {
-	case DebugLevel:
+	case Debug:
 		return "DEBUG"
-	case InfoLevel:
+	case Info:
 		return "INFO"
-	case WarnLevel:
+	case Warn:
 		return "WARN"
-	case ErrorLevel:
+	case Error:
 		return "ERROR"
-	case FatalLevel:
+	case Fatal:
 		return "FATAL"
 	default:
 		return fmt.Sprintf("LEVEL %d", level)

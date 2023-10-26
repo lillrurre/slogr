@@ -1,4 +1,4 @@
-package handler
+package slogr
 
 import (
 	"context"
@@ -13,8 +13,8 @@ import (
 	"sync"
 )
 
-type LogHandler struct {
-	opts           Options
+type Handler struct {
+	opts           HandlerOptions
 	preformatted   []byte   // data from WithGroup and WithAttrs
 	unopenedGroups []string // groups from WithGroup that haven't been opened
 	braces         int      //amount of braces to append at the end
@@ -22,7 +22,7 @@ type LogHandler struct {
 	out            io.Writer
 }
 
-type Options struct {
+type HandlerOptions struct {
 	DisableTimeField bool
 	Colorful         bool
 	TimeFieldFormat  string
@@ -31,19 +31,19 @@ type Options struct {
 	ReplaceAttr      func(_ []string, attr slog.Attr) slog.Attr
 }
 
-func NewHandler(writer io.Writer, opts Options) *LogHandler {
-	return &LogHandler{
+func NewHandler(writer io.Writer, opts HandlerOptions) *Handler {
+	return &Handler{
 		opts: opts,
 		mu:   new(sync.Mutex),
 		out:  writer,
 	}
 }
 
-func (h *LogHandler) Enabled(_ context.Context, level slog.Level) bool {
+func (h *Handler) Enabled(_ context.Context, level slog.Level) bool {
 	return h.opts.Level.Level() <= level
 }
 
-func (h *LogHandler) Handle(_ context.Context, r slog.Record) error {
+func (h *Handler) Handle(_ context.Context, r slog.Record) error {
 	buf := make([]byte, 0, 1024)
 
 	// Add log level. This is the first attr, so add start brace and no comma before.
@@ -87,7 +87,7 @@ func (h *LogHandler) Handle(_ context.Context, r slog.Record) error {
 	return err
 }
 
-func (h *LogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
+func (h *Handler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	if len(attrs) == 0 {
 		return h
 	}
@@ -105,7 +105,7 @@ func (h *LogHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
 	return &h2
 }
 
-func (h *LogHandler) WithGroup(name string) slog.Handler {
+func (h *Handler) WithGroup(name string) slog.Handler {
 	if name == "" {
 		return h
 	}
@@ -117,7 +117,7 @@ func (h *LogHandler) WithGroup(name string) slog.Handler {
 	return &h2
 }
 
-func (h *LogHandler) appendAttr(buf []byte, a slog.Attr) []byte {
+func (h *Handler) appendAttr(buf []byte, a slog.Attr) []byte {
 	// Resolve the Attr's value before doing anything else.
 	a.Value = a.Value.Resolve()
 
@@ -149,7 +149,7 @@ func (h *LogHandler) appendAttr(buf []byte, a slog.Attr) []byte {
 	return buf
 }
 
-func (h *LogHandler) appendUnopenedGroups(buf []byte) []byte {
+func (h *Handler) appendUnopenedGroups(buf []byte) []byte {
 	for _, group := range h.unopenedGroups {
 		buf = fmt.Appendf(buf, "%q:{", group)
 		h.braces++ // increment the amount of braces to append at the end

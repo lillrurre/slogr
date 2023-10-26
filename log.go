@@ -1,8 +1,7 @@
-package logger
+package slogr
 
 import (
 	"context"
-	"github.com/lillrurre/slogr/handler"
 	"github.com/lillrurre/slogr/level"
 	"io"
 	"log/slog"
@@ -15,7 +14,7 @@ type Logger struct {
 }
 
 type Options struct {
-	// Level is an extension of slog.Level, by introducing FatalLevel.
+	// Level is an extension of slog.Level, by introducing Fatal.
 	Level level.Level
 	// DisableTimeField disables the time form log entries
 	DisableTimeField bool
@@ -40,7 +39,7 @@ func NewLogger(opts *Options, writers ...io.Writer) *Logger {
 		opts.TimeFieldFormat = time.RFC3339Nano
 	}
 
-	handlerOpts := handler.Options{
+	handlerOpts := HandlerOptions{
 		DisableTimeField: opts.DisableTimeField,
 		Colorful:         opts.Colorful,
 		TimeFieldFormat:  opts.TimeFieldFormat,
@@ -49,7 +48,7 @@ func NewLogger(opts *Options, writers ...io.Writer) *Logger {
 		ReplaceAttr:      nil,
 	}
 
-	h := handler.NewHandler(io.MultiWriter(writers...), handlerOpts)
+	h := NewHandler(io.MultiWriter(writers...), handlerOpts)
 	logger := slog.New(h)
 
 	for key, val := range opts.Tags {
@@ -96,7 +95,7 @@ func (l *Logger) ErrorContext(ctx context.Context, msg string, args ...any) {
 }
 
 func (l *Logger) FatalContext(ctx context.Context, msg string, args ...any) {
-	l.Log(ctx, slog.Level(level.FatalLevel), msg, args...)
+	l.Log(ctx, slog.Level(level.Fatal), msg, args...)
 	os.Exit(1)
 }
 
