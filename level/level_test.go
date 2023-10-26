@@ -1,4 +1,4 @@
-package slogr
+package level
 
 import "testing"
 

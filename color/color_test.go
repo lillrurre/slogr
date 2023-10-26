@@ -1,7 +1,7 @@
 package color
 
 import (
-	"github.com/lillrurre/slogr"
+	"github.com/lillrurre/slogr/level"
 	"reflect"
 	"testing"
 )
@@ -9,7 +9,7 @@ import (
 func TestFrom(t *testing.T) {
 	testCases := []struct {
 		expected []byte
-		lvl      slogr.Level
+		lvl      level.Level
 	}{
 		{
 			expected: White,
@@ -17,23 +17,23 @@ func TestFrom(t *testing.T) {
 		},
 		{
 			expected: Debug,
-			lvl:      slogr.Debug,
+			lvl:      level.Debug,
 		},
 		{
 			expected: Info,
-			lvl:      slogr.Info,
+			lvl:      level.Info,
 		},
 		{
 			expected: Warn,
-			lvl:      slogr.Warn,
+			lvl:      level.Warn,
 		},
 		{
 			expected: Error,
-			lvl:      slogr.Error,
+			lvl:      level.Error,
 		},
 		{
 			expected: Fatal,
-			lvl:      slogr.Fatal,
+			lvl:      level.Fatal,
 		},
 	}
 
