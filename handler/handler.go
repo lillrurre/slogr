@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"fmt"
+	"github.com/lillrurre/slogr/color"
 	"github.com/lillrurre/slogr/level"
 	"io"
 	"log/slog"
@@ -23,6 +24,7 @@ type LogHandler struct {
 
 type Options struct {
 	DisableTimeField bool
+	Colorful         bool
 	TimeFieldFormat  string
 	Level            level.Level
 	AddSource        bool
@@ -74,6 +76,10 @@ func (h *LogHandler) Handle(_ context.Context, r slog.Record) error {
 
 	// Split the last comma and append braces + new line
 	buf = fmt.Append(buf[:len(buf)-1], strings.Repeat("}", h.braces+1), "\n")
+
+	if h.opts.Colorful {
+		buf = append(color.From(level.Level(r.Level)), buf...)
+	}
 
 	h.mu.Lock()
 	defer h.mu.Unlock()

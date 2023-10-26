@@ -25,7 +25,8 @@ type Options struct {
 	AddSource bool
 	// Tags are appended to the base logger.
 	// map[string]string{"version": "0.1.2"} would output "version": "0.1.2" in every log entry.
-	Tags map[string]string
+	Tags     map[string]string
+	Colorful bool
 }
 
 func NewLogger(opts *Options, writers ...io.Writer) *Logger {
@@ -40,10 +41,12 @@ func NewLogger(opts *Options, writers ...io.Writer) *Logger {
 	}
 
 	handlerOpts := handler.Options{
-		TimeFieldFormat:  opts.TimeFieldFormat,
 		DisableTimeField: opts.DisableTimeField,
+		Colorful:         opts.Colorful,
+		TimeFieldFormat:  opts.TimeFieldFormat,
 		Level:            opts.Level,
 		AddSource:        opts.AddSource,
+		ReplaceAttr:      nil,
 	}
 
 	h := handler.NewHandler(io.MultiWriter(writers...), handlerOpts)
