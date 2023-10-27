@@ -138,7 +138,8 @@ func (h *Handler) appendAttr(buf []byte, a slog.Attr) []byte {
 			return buf
 		}
 		if a.Key != "" {
-			buf = fmt.Appendf(buf, "%q:%q,", a.Key, "")
+			buf = fmt.Appendf(buf, "%q:{", a.Key)
+			h.braces++
 		}
 		for _, ga := range attrs {
 			buf = h.appendAttr(buf, ga)
