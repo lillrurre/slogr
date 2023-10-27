@@ -23,7 +23,7 @@ func testLogger(lvl level.Level, writer io.Writer) *Logger {
 }
 
 func TestNewLogger(t *testing.T) {
-
+	NewLogger(&Options{})
 }
 
 func TestLogger_Debug(t *testing.T) {
