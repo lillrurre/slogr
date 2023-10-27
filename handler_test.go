@@ -146,9 +146,110 @@ func TestLogHandler_Handle(t *testing.T) {
 }
 
 func TestLogHandler_WithAttrs(t *testing.T) {
+	// Test no name returns
+	{
+		f, err := os.OpenFile("handler.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		if err != nil {
+			t.Fatalf("unexpected error while opening file: %v", err)
+		}
 
+		h := NewHandler(f, HandlerOptions{})
+		nh := h.WithAttrs([]slog.Attr{})
+		if !reflect.DeepEqual(h, nh) {
+			t.Errorf("expected %+v, got %+v", h, nh)
+		}
+	}
+	_ = os.Remove("handler.log")
+
+	// TODO add test cases that check that the json is valid and all attrs are appended
 }
 
 func TestLogHandler_WithGroup(t *testing.T) {
+	// Test no name returns
+	{
+		f, err := os.OpenFile("handler.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		if err != nil {
+			t.Fatalf("unexpected error while opening file: %v", err)
+		}
+
+		h := NewHandler(f, HandlerOptions{})
+		nh := h.WithGroup("")
+		if !reflect.DeepEqual(h, nh) {
+			t.Errorf("expected %+v, got %+v", h, nh)
+		}
+	}
+	_ = os.Remove("handler.log")
+
+	// TODO add test cases that check that the json is valid and all attrs are appended
+}
+
+func TestHandler_appendAttr(t *testing.T) {
+
+	// Test no Attr returns buf
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{})
+		expected := ""
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Attr{})
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
+
+	// Test append string
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{})
+		expected := `"foo":"bar",`
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Attr{Key: "foo", Value: slog.StringValue("bar")})
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
+
+	// Test append time
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{TimeFieldFormat: time.RFC3339Nano})
+		now := time.Now()
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Time(slog.TimeKey, now))
+		expected := fmt.Sprintf(`"time":%q,`, now.Format(time.RFC3339Nano))
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
+
+	// Test empty group
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{})
+		expected := ""
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Group("lol"))
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
+
+	// Test empty group
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{})
+		expected := `"lol":{"hello":"world",`
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Group("lol", slog.Attr{Key: "hello", Value: slog.StringValue("world")}))
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
+
+	// Test default case
+	{
+		h := NewHandler(os.Stdout, HandlerOptions{})
+		expected := `"bool":"true",`
+		buf := make([]byte, 0, 512)
+		buf = h.appendAttr(buf, slog.Bool("bool", true))
+		if expected != string(buf) {
+			t.Errorf("exptected %s got %s", expected, buf)
+		}
+	}
 
 }
