@@ -17,7 +17,7 @@ type Handler struct {
 	opts           HandlerOptions
 	preformatted   []byte   // data from WithGroup and WithAttrs
 	unopenedGroups []string // groups from WithGroup that haven't been opened
-	braces         int      //amount of braces to append at the end
+	braces         int      // amount of braces to append at the end
 	mu             *sync.Mutex
 	out            io.Writer
 }
@@ -156,4 +156,21 @@ func (h *Handler) appendUnopenedGroups(buf []byte) []byte {
 		h.braces++ // increment the amount of braces to append at the end
 	}
 	return buf
+}
+
+func (h *Handler) SetColorful(colorful bool) {
+	h.opts = HandlerOptions{
+		DisableTimeField: h.opts.DisableTimeField,
+		Colorful:         colorful,
+		TimeFieldFormat:  h.opts.TimeFieldFormat,
+		Level:            h.opts.Level,
+		AddSource:        h.opts.AddSource,
+		ReplaceAttr:      h.opts.ReplaceAttr,
+	}
+}
+
+func (h *Handler) WithColors() slog.Handler {
+	h2 := *h
+	h2.SetColorful(true)
+	return &h2
 }
