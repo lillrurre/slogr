@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"bufio"
+	"errors"
 	"github.com/lillrurre/slogr"
+	"net"
 	"net/http"
 	"runtime/debug"
 	"time"
@@ -12,6 +15,14 @@ type responseWriter struct {
 
 	status      int
 	wroteHeader bool
+}
+
+func (rw *responseWriter) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := rw.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("hijack not supported")
+	}
+	return h.Hijack()
 }
 
 func wrapResponseWriter(w http.ResponseWriter) *responseWriter {
