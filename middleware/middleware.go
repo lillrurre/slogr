@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"log/slog"
+	"github.com/lillrurre/slogr"
 	"net/http"
 	"runtime/debug"
 	"time"
@@ -27,7 +27,7 @@ func (rw *responseWriter) WriteHeader(code int) {
 	rw.wroteHeader = true
 }
 
-func RequestLogger(logger *slog.Logger) func(next http.Handler) http.Handler {
+func RequestLogger(logger *slogr.Logger) func(next http.Handler) http.Handler {
 	logger = logger.WithGroup("request")
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
