@@ -34,7 +34,7 @@ func RequestLogger(logger *slogr.Logger) func(next http.Handler) http.Handler {
 			defer func() {
 				if err := recover(); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					logger.With("error", err).With("trace", debug.Stack()).Error("http panic")
+					logger.With("error", err).With("trace", string(debug.Stack())).Error("http panic")
 				}
 			}()
 
