@@ -28,6 +28,13 @@ type Options struct {
 	Colorful bool
 }
 
+func Default() *Logger {
+	return NewLogger(&Options{
+		Level:           level.Debug,
+		TimeFieldFormat: time.RFC3339Nano,
+	})
+}
+
 func NewLogger(opts *Options, writers ...io.Writer) *Logger {
 
 	// use stdout if not writers are specified.
