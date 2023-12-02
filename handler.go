@@ -157,20 +157,3 @@ func (h *Handler) appendUnopenedGroups(buf []byte) []byte {
 	}
 	return buf
 }
-
-func (h *Handler) SetColorful(colorful bool) {
-	h.opts = HandlerOptions{
-		DisableTimeField: h.opts.DisableTimeField,
-		Colorful:         colorful,
-		TimeFieldFormat:  h.opts.TimeFieldFormat,
-		Level:            h.opts.Level,
-		AddSource:        h.opts.AddSource,
-		ReplaceAttr:      h.opts.ReplaceAttr,
-	}
-}
-
-func (h *Handler) WithColors() slog.Handler {
-	h2 := *h
-	h2.SetColorful(true)
-	return &h2
-}
