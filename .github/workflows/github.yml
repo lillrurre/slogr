@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.21.3'
+          go-version: '1.21.x'
       - uses: actions/checkout@v3
 
       - name: fmt
@@ -40,7 +40,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
+          go-version: '1.21.x'
 
       - name: test & race
         run: go test -race ./...
