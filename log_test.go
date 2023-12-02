@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/lillrurre/slogr/level"
 	"io"
+	"log/slog"
 	"os"
 	"os/exec"
 	"reflect"
@@ -20,6 +21,13 @@ func testLogger(lvl level.Level, writer io.Writer) *Logger {
 		Tags:             map[string]string{"test": "log"},
 		Colorful:         false,
 	}, writer)
+}
+
+func TestDefault(t *testing.T) {
+	l := Default()
+	if !l.Enabled(context.Background(), slog.LevelDebug) {
+		t.Fatalf("expected log level to be debug")
+	}
 }
 
 func TestNewLogger(t *testing.T) {
